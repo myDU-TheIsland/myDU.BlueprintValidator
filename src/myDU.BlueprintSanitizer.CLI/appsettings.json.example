@@ -1,0 +1,14 @@
+{
+  "Settings": {
+    "ExternalDlls": [],
+    "DisableValidators": [],
+    "DisableSanitizers": [],
+    "QueueingURL": "http://queueing:9630"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  }
+}

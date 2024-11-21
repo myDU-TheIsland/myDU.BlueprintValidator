@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MyDU.BlueprintValidator</name>
+    </assembly>
+    <members>
+        <member name="P:MyDU.BlueprintValidator.Initializer.Settings">
+            <summary>
+            Gets or sets the validator settings.
+            </summary>
+            <value>The setup settings.</value>
+        </member>
+        <member name="P:MyDU.BlueprintValidator.Initializer.Configuration">
+            <summary>
+            Gets or sets the configuration builder.
+            </summary>
+        </member>
+    </members>
+</doc>
