@@ -6,7 +6,7 @@ namespace MyDU.BlueprintValidator.Validators.Voxel
 {
     using System.Threading.Tasks;
     using Backend;
-    using NQ;
+    using MyDU.BlueprintValidator.Classes;
     using static MyDU.BlueprintValidator.Validators.ValidationResult;
 
     internal class VoxelOutOfBoundsValidator : Validate
@@ -15,7 +15,7 @@ namespace MyDU.BlueprintValidator.Validators.Voxel
         {
         }
 
-        public override Task<ValidationResult> ValidateAsync(BlueprintData blueprint)
+        public override Task<ValidationResult> ValidateAsync(BlueprintDataExtended blueprint)
         {
             if (blueprint == null)
             {

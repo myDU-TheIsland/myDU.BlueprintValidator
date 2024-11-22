@@ -4,21 +4,14 @@
 
 namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using MyDU.BlueprintValidator.Processors.VoxelData.Enum;
-    using MyDU.BlueprintValidator.Processors.VoxelData.Exception;
     using MyDU.BlueprintValidator.Processors.VoxelData.Interface;
 
     public struct VertexVoxel : IDeserialize<VertexVoxel>
     {
-        public byte Flags { get; set; } = 0;
-
-        public byte[] Position { get; set; }
+        public byte Flags;
+        public byte[] Position;
 
         public VertexVoxel(byte[] position)
         {
@@ -26,32 +19,44 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
             this.Position = position;
         }
 
-        public static Dictionary<Range, VertexVoxel> DeserializeSparse(int length, BinaryReader reader)
+        public static VertexVoxel Deserialize(Stream reader)
         {
-            var sparseVertices = new Dictionary<Range, VertexVoxel>();
+            byte flags = (byte)reader.ReadByte();
+            byte[] position = new byte[3];
+            reader.Read(position, 0, position.Length);
+            return new VertexVoxel(position) { Flags = flags };
+        }
+
+        public static SortedDictionary<int, VertexVoxel> DeserializeSparse(int length, Stream reader)
+        {
+            var sparseVertices = new SortedDictionary<int, VertexVoxel>();
             int i = 0;
             while (i < length)
             {
-                byte flags = reader.ReadByte();
+                byte flags = (byte)reader.ReadByte();
+                byte maskedFlags = (byte)(flags & 0xFE);
                 int more = reader.ReadByte() + 1;
                 if ((flags & 1) != 0)
                 {
                     int j = 0;
                     while (j < more)
                     {
-                        byte[] position = reader.ReadBytes(3);
+                        byte[] position = new byte[3];
+                        reader.Read(position, 0, 3);
                         int yetMore = reader.ReadByte() + 1;
                         int index = i + j;
-                        sparseVertices[new Range(index, index + yetMore)] = new VertexVoxel(position)
-                        {
-                            Flags = (byte)(flags & 0xFE),
-                        };
+                        sparseVertices.Add(
+                            index,
+                            new VertexVoxel(position)
+                            {
+                                Flags = maskedFlags,
+                            });
                         j += yetMore;
                     }
 
                     if (j != more)
                     {
-                        throw new DeserializationException(DeserializeError.BadData);
+                        throw new InvalidDataException("Bad data");
                     }
                 }
 
@@ -60,16 +65,10 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
 
             if (i != length)
             {
-                throw new DeserializationException(DeserializeError.BadData);
+                throw new InvalidDataException("Bad data");
             }
 
             return sparseVertices;
-        }
-
-        public void Deserialize(BinaryReader reader)
-        {
-            this.Flags = reader.ReadByte();
-            this.Position = reader.ReadBytes(3);
         }
     }
 }

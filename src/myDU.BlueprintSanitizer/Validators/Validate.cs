@@ -6,6 +6,7 @@ namespace MyDU.BlueprintValidator.Validators
 {
     using System.Threading.Tasks;
     using Backend;
+    using MyDU.BlueprintValidator.Classes;
     using NQ;
 
     public abstract class Validate : IValidate
@@ -20,6 +21,6 @@ namespace MyDU.BlueprintValidator.Validators
             this.Name = name;
         }
 
-        public abstract Task<ValidationResult> ValidateAsync(BlueprintData blueprint);
+        public abstract Task<ValidationResult> ValidateAsync(BlueprintDataExtended blueprint);
     }
 }

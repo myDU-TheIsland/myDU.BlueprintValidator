@@ -8,6 +8,7 @@ namespace MyDU.BlueprintValidator.Validators.Blueprint
     using System.Linq;
     using System.Threading.Tasks;
     using Backend;
+    using MyDU.BlueprintValidator.Classes;
     using NQ;
     using static MyDU.BlueprintValidator.Validators.ValidationResult;
 
@@ -17,7 +18,7 @@ namespace MyDU.BlueprintValidator.Validators.Blueprint
         {
         }
 
-        public override Task<ValidationResult> ValidateAsync(BlueprintData blueprint)
+        public override Task<ValidationResult> ValidateAsync(BlueprintDataExtended blueprint)
         {
             if (blueprint == null)
             {

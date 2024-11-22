@@ -8,7 +8,7 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Extension
 
     public static class BoolExtensions
     {
-        public static byte MaybeBoolToInt(bool? value)
+        public static byte ToInt(this bool? value)
         {
             return value switch
             {
@@ -18,14 +18,14 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Extension
             };
         }
 
-        public static bool? IntToMaybeBool(byte value)
+        public static bool? ToBool(this byte value)
         {
             return value switch
             {
                 0 => null,
                 1 => true,
                 2 => false,
-                _ => throw new ArgumentOutOfRangeException(nameof(value), value, null),
+                _ => throw new ArgumentOutOfRangeException(nameof(value), "Invalid value"),
             };
         }
     }

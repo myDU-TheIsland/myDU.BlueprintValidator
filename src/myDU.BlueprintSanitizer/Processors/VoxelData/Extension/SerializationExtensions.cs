@@ -6,66 +6,44 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Extension
 {
     using System;
     using System.IO;
+    using System.Numerics;
     using MyDU.BlueprintValidator.Processors.VoxelData.Interface;
-    using Newtonsoft.Json.Linq;
 
     public static class SerializationExtensions
     {
-        public static TValue Deserialize<TValue>(this BinaryReader reader) where TValue : IDeserialize<TValue>, new()
+        public static void Serialize(this uint value, Stream writer)
         {
-            TValue result = new TValue();
-            result.Deserialize(reader);
-            return result;
+            writer.Write(BitConverter.GetBytes(value), 0, sizeof(uint));
         }
 
-        public static void Serialize(this uint value, BinaryWriter writer)
+        public static void Serialize(this ulong value, Stream writer)
         {
-            writer.Write(BitConverter.GetBytes(value));
+            writer.Write(BitConverter.GetBytes(value), 0, sizeof(ulong));
         }
 
-        public static uint DeserializeUInt32(this BinaryReader reader)
+        public static void Serialize(this int value, Stream writer)
         {
-            return BitConverter.ToUInt32(reader.ReadBytes(4), 0);
+            writer.Write(BitConverter.GetBytes(value), 0, sizeof(int));
         }
 
-        public static void Serialize(this int value, BinaryWriter writer)
+        public static void Serialize(this long value, Stream writer)
         {
-            writer.Write(BitConverter.GetBytes(value));
+            writer.Write(BitConverter.GetBytes(value), 0, sizeof(long));
         }
 
-        public static int DeserializeInt32(this BinaryReader reader)
+        public static void Serialize(this float value, Stream writer)
         {
-            return BitConverter.ToInt32(reader.ReadBytes(4), 0);
+            writer.Write(BitConverter.GetBytes(value), 0, sizeof(float));
         }
 
-        public static void Serialize(this ulong value, BinaryWriter writer)
+        public static void Serialize(this double value, Stream writer)
         {
-            writer.Write(BitConverter.GetBytes(value));
+            writer.Write(BitConverter.GetBytes(value), 0, sizeof(double));
         }
 
-        public static ulong DeserializeUInt64(this BinaryReader reader)
+        public static void Serialize(this byte value, Stream writer)
         {
-            return BitConverter.ToUInt64(reader.ReadBytes(8), 0);
-        }
-
-        public static void Serialize(this long value, BinaryWriter writer)
-        {
-            writer.Write(BitConverter.GetBytes(value));
-        }
-
-        public static long DeserializeInt64(this BinaryReader reader)
-        {
-            return BitConverter.ToInt64(reader.ReadBytes(8), 0);
-        }
-
-        public static void Serialize(this double value, BinaryWriter writer)
-        {
-            writer.Write(BitConverter.GetBytes(value));
-        }
-
-        public static double DeserializeDouble(this BinaryReader reader)
-        {
-            return BitConverter.ToDouble(reader.ReadBytes(8), 0);
+            writer.WriteByte(value);
         }
     }
 }

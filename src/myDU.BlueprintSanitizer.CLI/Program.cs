@@ -5,20 +5,16 @@
 namespace MyDU.BlueprintValidator.CLI
 {
     using System;
-    using System.Linq;
-    using System.Net.Http;
     using System.Threading.Tasks;
     using Backend;
     using Backend.Business;
     using BotLib.BotClient;
     using BotLib.Protocols;
-    using BotLib.Protocols.Queuing;
     using Microsoft.Extensions.DependencyInjection;
     using MyDU.BlueprintValidator;
     using NQ.Router;
     using NQutils;
     using NQutils.Sql;
-    using Orleans;
 
     public static class Program
     {

@@ -8,6 +8,6 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Interface
 
     public interface IDeserialize<T>
     {
-        void Deserialize(BinaryReader reader);
+        static abstract T Deserialize(Stream reader);
     }
 }

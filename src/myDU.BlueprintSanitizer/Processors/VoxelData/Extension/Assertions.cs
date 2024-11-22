@@ -4,7 +4,7 @@
 
 namespace MyDU.BlueprintValidator.Processors.VoxelData.Extension
 {
-    using MyDU.BlueprintValidator.Processors.VoxelData.Exception;
+    using System.IO;
 
     public static class Assertions
     {
@@ -12,7 +12,7 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Extension
         {
             if (actual != expected)
             {
-                throw new DeserializationException(VoxelData.Enum.DeserializeError.BadData, actual, expected);
+                throw new InvalidDataException("Bad Magic Data");
             }
         }
 
@@ -20,7 +20,7 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Extension
         {
             if (actual != expected)
             {
-                throw new DeserializationException(VoxelData.Enum.DeserializeError.BadData, actual, expected);
+                throw new InvalidDataException("Bad Version Data");
             }
         }
     }

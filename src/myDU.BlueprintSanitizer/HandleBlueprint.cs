@@ -7,6 +7,7 @@ namespace MyDU.BlueprintValidator
     using System.Collections.Generic;
     using System.Linq;
     using System.Text;
+    using MyDU.BlueprintValidator.Classes;
     using MyDU.BlueprintValidator.Sanitizers;
     using MyDU.BlueprintValidator.Validators;
     using Newtonsoft.Json;
@@ -20,7 +21,7 @@ namespace MyDU.BlueprintValidator
 
         public static (bool IsGood, List<SanitizationResult> sanitizationResult, List<ValidationResult> validationResults) IsBlueprintGood(byte[] jsondata)
         {
-            BlueprintData blueprint = JsonConvert.DeserializeObject<BlueprintData>(Encoding.UTF8.GetString(jsondata));
+            BlueprintDataExtended blueprint = JsonConvert.DeserializeObject<BlueprintDataExtended>(Encoding.UTF8.GetString(jsondata));
 
             List<SanitizationResult> sanitizationResult = new List<SanitizationResult>();
             List<ValidationResult> validationResults = new List<ValidationResult>();

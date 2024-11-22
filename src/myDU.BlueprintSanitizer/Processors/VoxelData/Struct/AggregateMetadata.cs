@@ -28,25 +28,39 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
             this.HeavyChildren = new List<HeavyMetadata>(8);
         }
 
-        public void Deserialize(BinaryReader reader)
+        public AggregateMetadata(LightMetadata lightCurrent, HeavyMetadata heavyCurrent)
         {
-            uint magic = reader.ReadUInt32();
-            Assertions.AssertMagic(magic, MAGIC);
-            uint version = reader.ReadUInt32();
-            Assertions.AssertVersion(version, VERSION);
-            this.LightCurrent = SerializationExtensions.Deserialize<LightMetadata>(reader);
+            this.LightCurrent = lightCurrent;
+            this.HeavyCurrent = heavyCurrent;
             this.LightChildren = new List<LightMetadata>(8);
+            this.HeavyChildren = new List<HeavyMetadata>(8);
+        }
+
+        public static AggregateMetadata Deserialize(Stream reader)
+        {
+            uint magic = DeserializationExtensions.DeserializeUInt32(reader);
+            Assertions.AssertMagic(magic, MAGIC);
+            uint version = DeserializationExtensions.DeserializeUInt32(reader);
+            Assertions.AssertVersion(version, VERSION);
+            LightMetadata lightCurrent = LightMetadata.Deserialize(reader);
+            List<LightMetadata> lightChildren = new List<LightMetadata>(8);
             for (int i = 0; i < 8; i++)
             {
-                this.LightChildren.Add(SerializationExtensions.Deserialize<LightMetadata>(reader));
+                lightChildren.Add(LightMetadata.Deserialize(reader));
             }
 
-            this.HeavyCurrent = SerializationExtensions.Deserialize<HeavyMetadata>(reader);
-            this.HeavyChildren = new List<HeavyMetadata>(8);
+            HeavyMetadata heavyCurrent = HeavyMetadata.Deserialize(reader);
+            List<HeavyMetadata> heavyChildren = new List<HeavyMetadata>(8);
             for (int i = 0; i < 8; i++)
             {
-                this.HeavyChildren.Add(SerializationExtensions.Deserialize<HeavyMetadata>(reader));
+                heavyChildren.Add(HeavyMetadata.Deserialize(reader));
             }
+
+            return new AggregateMetadata(lightCurrent, heavyCurrent)
+            {
+                LightChildren = lightChildren,
+                HeavyChildren = heavyChildren,
+            };
         }
     }
 }

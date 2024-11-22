@@ -23,15 +23,27 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
         {
         }
 
-        public void Deserialize(BinaryReader reader)
+        public VoxelCellData(VertexGrid grid, MaterialMapper mapping)
         {
-            uint magic = reader.ReadUInt32();
+            this.Grid = grid;
+            this.Mapping = mapping;
+            this.IsDiff = 1;
+        }
+
+        public static VoxelCellData Deserialize(Stream reader)
+        {
+            uint magic = DeserializationExtensions.DeserializeUInt32(reader);
             Assertions.AssertMagic(magic, MAGIC);
-            uint version = reader.ReadUInt32();
+            uint version = DeserializationExtensions.DeserializeUInt32(reader);
             Assertions.AssertVersion(version, VERSION);
-            this.Grid.Deserialize(reader);
-            this.Mapping.Deserialize(reader);
-            this.IsDiff = reader.ReadByte();
+            VertexGrid grid = VertexGrid.Deserialize(reader);
+            MaterialMapper mapping = MaterialMapper.Deserialize(reader);
+            byte isDiff = DeserializationExtensions.DeserializeByte(reader);
+
+            return new VoxelCellData(grid, mapping)
+            {
+                IsDiff = isDiff,
+            };
         }
     }
 }

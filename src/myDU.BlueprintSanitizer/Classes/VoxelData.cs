@@ -5,13 +5,12 @@
 namespace MyDU.BlueprintValidator.Classes
 {
     using System;
-    using MyDU.BlueprintValidator.Processors.VoxelData.Struct;
 
     public class VoxelData
     {
         public byte[] data { get; set; }
 
-        public VoxelCellData actualCellData { get; set; }
+        public object actualCellData { get; set; }
 
         public long hash { get; set; }
 

@@ -4,36 +4,37 @@
 
 namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
 {
-    using System;
     using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-    using MyDU.BlueprintValidator.Processors.VoxelData.Enum;
-    using MyDU.BlueprintValidator.Processors.VoxelData.Exception;
+    using MyDU.BlueprintValidator.Processors.VoxelData.Extension;
     using MyDU.BlueprintValidator.Processors.VoxelData.Interface;
 
     public struct VertexMaterial : IDeserialize<VertexMaterial>
     {
-        public byte Material { get; set; }
+        public byte Material;
 
         public VertexMaterial(byte material)
         {
             this.Material = material;
         }
 
-        public static Dictionary<Range, VertexMaterial> DeserializeSparse(int length, BinaryReader reader)
+        public static VertexMaterial Deserialize(Stream reader)
         {
-            var output = new Dictionary<Range, VertexMaterial>();
+            byte material = DeserializationExtensions.DeserializeByte(reader);
+            return new VertexMaterial(material);
+        }
+
+        public static SortedDictionary<int, VertexMaterial> DeserializeSparse(int length, Stream reader)
+        {
+            var output = new SortedDictionary<int, VertexMaterial>();
             int i = 0;
             while (i < length)
             {
-                var material = reader.ReadByte();
-                int more = reader.ReadByte() + 1;
-                if (material != 0)
+                var material = NullableExtensions.DeserializeNullableByte(reader);
+                int more = DeserializationExtensions.DeserializeByte(reader) + 1;
+                if (material.HasValue)
                 {
-                    output[new Range(i, i + more)] = new VertexMaterial(material);
+                    output.Add(i, new VertexMaterial(material.Value));
                 }
 
                 i += more;
@@ -41,15 +42,10 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
 
             if (i != length)
             {
-                throw new DeserializationException(DeserializeError.BadData);
+                throw new InvalidDataException("Bad data");
             }
 
             return output;
-        }
-
-        public void Deserialize(BinaryReader reader)
-        {
-            this.Material = reader.ReadByte();
         }
     }
 }

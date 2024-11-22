@@ -4,9 +4,9 @@
 
 namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
 {
-    using System.Collections.Generic;
     using System.IO;
     using System.Numerics;
+    using MyDU.BlueprintValidator.Processors.VoxelData.Extension;
     using MyDU.BlueprintValidator.Processors.VoxelData.Interface;
 
     public struct Inertia : IDeserialize<Inertia>
@@ -15,17 +15,24 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
 
         public Vector3 GravityCenter { get; set; }
 
-        public List<double> InertiaTensor { get; set; }
+        public double[] InertiaTensor { get; set; }
 
-        public void Deserialize(BinaryReader reader)
+        public static Inertia Deserialize(Stream reader)
         {
-            this.Mass = reader.ReadDouble();
-            this.GravityCenter = new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle());
-            this.InertiaTensor = new List<double>();
+            double mass = DeserializationExtensions.DeserializeUInt64(reader);
+            Vector3 gravityCenter = Vector3Extensions.Deserialize(reader);
+            double[] inertiaTensor = new double[6];
             for (int i = 0; i < 6; i++)
             {
-                this.InertiaTensor.Add(reader.ReadDouble());
+                inertiaTensor[i] = DeserializationExtensions.DeserializeDouble(reader);
             }
+
+            return new Inertia
+            {
+                Mass = mass,
+                GravityCenter = gravityCenter,
+                InertiaTensor = inertiaTensor,
+            };
         }
     }
 }

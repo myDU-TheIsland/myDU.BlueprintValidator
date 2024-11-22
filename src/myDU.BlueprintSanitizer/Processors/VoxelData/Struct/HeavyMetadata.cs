@@ -11,7 +11,7 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
 
     public struct HeavyMetadata : IDeserialize<HeavyMetadata>
     {
-        public RangeZYX BoundingBox { get; set; }
+        public RangeZYX? BoundingBox { get; set; }
 
         public SortedDictionary<MaterialId, FixedPoint> MaterialStats { get; set; }
 
@@ -21,13 +21,21 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
 
         public ulong ServerPreviousVersion { get; set; }
 
-        public void Deserialize(BinaryReader reader)
+        public static HeavyMetadata Deserialize(Stream reader)
         {
-            this.BoundingBox = SerializationExtensions.Deserialize<RangeZYX>(reader);
-            this.MaterialStats = DictionaryExtensions.Deserialize<MaterialId, FixedPoint>(reader);
-            this.Inertia = NullableExtensions.Deserialize<Inertia>(reader);
-            this.ServerTimestamp = reader.ReadUInt64();
-            this.ServerPreviousVersion = reader.ReadUInt64();
+            RangeZYX? boundingBox = NullableExtensions.DeserializeNullable<RangeZYX>(reader);
+            SortedDictionary<MaterialId, FixedPoint> materialStats = NullableExtensions.DeserializeNullableSortedDictionary<MaterialId, FixedPoint>(reader);
+            Inertia? inertia = NullableExtensions.DeserializeNullable<Inertia>(reader);
+            ulong serverTimestamp = DeserializationExtensions.DeserializeUInt64(reader);
+            ulong serverPreviousVersion = DeserializationExtensions.DeserializeUInt64(reader);
+            return new HeavyMetadata
+            {
+                BoundingBox = boundingBox,
+                MaterialStats = materialStats,
+                Inertia = inertia,
+                ServerTimestamp = serverTimestamp,
+                ServerPreviousVersion = serverPreviousVersion,
+            };
         }
     }
 }

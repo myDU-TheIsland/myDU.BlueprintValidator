@@ -12,19 +12,32 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
     {
         public bool? Vox { get; set; }
 
-        public bool? R { get; set; }
+        public bool? Mod { get; set; }
 
         public long? HashVoxel { get; set; }
 
         public long? HashDecor { get; set; }
 
-        public float? Entropy { get; set; }
+        public double? Entropy { get; set; }
 
-        public void Deserialize(BinaryReader reader)
+        public static LightMetadata Deserialize(Stream reader)
         {
-            byte value = reader.ReadByte();
-            this.Vox = BoolExtensions.IntToMaybeBool((byte)((value >> 2) & 3));
-            this.R = BoolExtensions.IntToMaybeBool((byte)(value & 3));
+            byte value = DeserializationExtensions.DeserializeByte(reader);
+            bool? vox = BoolExtensions.ToBool((byte)((value >> 2) & 3));
+            bool? mod = BoolExtensions.ToBool((byte)(value & 3));
+
+            long? hashVoxel = NullableExtensions.DeserializeNullableInt64(reader);
+            long? hashDecor = NullableExtensions.DeserializeNullableInt64(reader);
+            double? entropy = NullableExtensions.DeserializeNullableDouble(reader);
+
+            return new LightMetadata
+            {
+                Vox = vox,
+                Mod = mod,
+                HashVoxel = hashVoxel,
+                HashDecor = hashDecor,
+                Entropy = entropy,
+            };
         }
     }
 }

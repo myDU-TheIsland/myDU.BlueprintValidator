@@ -7,14 +7,13 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Extension
     using System;
     using System.IO;
     using K4os.Compression.LZ4;
-    using MyDU.BlueprintValidator.Processors.VoxelData.Exception;
-    using MyDU.BlueprintValidator.Processors.VoxelData.Struct;
+    using MyDU.BlueprintValidator.Processors.VoxelData.Interface;
 
     public static class CompressionExtensions
     {
         private const uint COMPRESSEDMAGIC = 0xfb14b6f9;
 
-        public static VoxelCellData Decompress(byte[] bytes)
+        public static TValue Decompress<TValue>(byte[] bytes) where TValue : IDeserialize<TValue>, new()
         {
             uint magic = BitConverter.ToUInt32(bytes, 0);
             Assertions.AssertMagic(magic, COMPRESSEDMAGIC);
@@ -26,16 +25,14 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Extension
 
             if (decoded != uncompressedSize)
             {
-                throw new DeserializationException(VoxelData.Enum.DeserializeError.BadData);
+                throw new InvalidDataException("Bad data");
             }
 
             using (var memoryStream = new MemoryStream(target, 0, target.Length))
             {
-                BinaryReader reader = new BinaryReader(memoryStream);
-                var output = new VoxelCellData();
+                var deserializedObject = TValue.Deserialize(memoryStream);
                 var testData = System.Convert.ToBase64String(target);
-                output.Deserialize(reader);
-                return output;
+                return deserializedObject;
             }
         }
     }

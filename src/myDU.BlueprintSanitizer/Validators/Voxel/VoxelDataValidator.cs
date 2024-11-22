@@ -11,8 +11,8 @@ namespace MyDU.BlueprintValidator.Validators.Voxel
     using MongoDB.Bson.Serialization;
     using MyDU.BlueprintValidator.Classes;
     using MyDU.BlueprintValidator.Processors.VoxelData.Extension;
+    using MyDU.BlueprintValidator.Processors.VoxelData.Struct;
     using Newtonsoft.Json.Linq;
-    using NQ;
     using static MyDU.BlueprintValidator.Validators.ValidationResult;
 
     internal class VoxelDataValidator : Validate
@@ -21,7 +21,7 @@ namespace MyDU.BlueprintValidator.Validators.Voxel
         {
         }
 
-        public override Task<ValidationResult> ValidateAsync(BlueprintData blueprint)
+        public override Task<ValidationResult> ValidateAsync(BlueprintDataExtended blueprint)
         {
             if (blueprint == null)
             {
@@ -41,13 +41,13 @@ namespace MyDU.BlueprintValidator.Validators.Voxel
 
             for (var x = 0; x < blueprint.VoxelData.Count; x++)
             {
-                blueprint.VoxelData[x] = this.HandleVoxelData(blueprint.VoxelData[x]);
+                blueprint.Voxels.Add(this.HandleVoxelData(blueprint.VoxelData[x]));
             }
 
             return Task.FromResult(Succeeded());
         }
 
-        private JToken HandleVoxelData(JToken json)
+        private Voxel HandleVoxelData(JToken json)
         {
             BsonDocument bsonData = BsonSerializer.Deserialize<BsonDocument>(json.ToString());
             Voxel data = BsonSerializer.Deserialize<Voxel>(bsonData);
@@ -56,7 +56,16 @@ namespace MyDU.BlueprintValidator.Validators.Voxel
             {
                 try
                 {
-                    item.Value.actualCellData = CompressionExtensions.Decompress(item.Value.data);
+                    switch (item.Key)
+                    {
+                        case "meta":
+                            item.Value.actualCellData = CompressionExtensions.Decompress<AggregateMetadata>(item.Value.data);
+                            break;
+                        case "voxel":
+                            item.Value.actualCellData = CompressionExtensions.Decompress<VoxelCellData>(item.Value.data);
+                            break;
+                    }
+
                     continue;
                 }
                 catch (Exception exception)
@@ -65,7 +74,7 @@ namespace MyDU.BlueprintValidator.Validators.Voxel
                 }
             }
 
-            return JToken.Parse(data.ToJson());
+            return data;
         }
     }
 }

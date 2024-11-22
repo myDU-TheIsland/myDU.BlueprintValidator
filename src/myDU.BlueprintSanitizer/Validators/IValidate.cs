@@ -5,14 +5,14 @@
 namespace MyDU.BlueprintValidator.Validators
 {
     using System.Threading.Tasks;
-    using NQ;
+    using MyDU.BlueprintValidator.Classes;
 
     public interface IValidate
     {
         string Name { get; }
 
-        Task<ValidationResult> ValidateAsync(BlueprintData blueprint);
+        Task<ValidationResult> ValidateAsync(BlueprintDataExtended blueprint);
 
-        ValidationResult Validate(BlueprintData blueprint) => this.ValidateAsync(blueprint).GetAwaiter().GetResult();
+        ValidationResult Validate(BlueprintDataExtended blueprint) => this.ValidateAsync(blueprint).GetAwaiter().GetResult();
     }
 }

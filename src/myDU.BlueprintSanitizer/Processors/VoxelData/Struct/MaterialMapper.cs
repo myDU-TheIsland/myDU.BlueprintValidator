@@ -15,10 +15,15 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
         public SortedDictionary<MaterialId, byte> Mapping;
         public SortedDictionary<byte, MaterialId> ReverseMapping;
 
-        public void Deserialize(BinaryReader reader)
+        public static MaterialMapper Deserialize(Stream reader)
         {
-            this.Mapping = DictionaryExtensions.Deserialize<MaterialId>(reader);
-            this.ReverseMapping = new SortedDictionary<byte, MaterialId>(this.Mapping.ToDictionary(key => key.Value, value => value.Key));
+            SortedDictionary<MaterialId, byte> mapping = SortedDictionaryExtensions.Deserialize<MaterialId>(reader);
+            SortedDictionary<byte, MaterialId> reverseMapping = new SortedDictionary<byte, MaterialId>(mapping.ToDictionary(key => key.Value, value => value.Key));
+            return new MaterialMapper
+            {
+                Mapping = mapping,
+                ReverseMapping = reverseMapping,
+            };
         }
     }
 }

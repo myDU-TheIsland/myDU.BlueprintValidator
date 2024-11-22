@@ -5,25 +5,30 @@
 namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
 {
     using System;
-    using System.Collections.Generic;
     using System.IO;
-    using System.Linq;
     using System.Text;
-    using System.Threading.Tasks;
-    using MyDU.BlueprintValidator.Processors.VoxelData.Enum;
+    using MyDU.BlueprintValidator.Processors.VoxelData.Extension;
     using MyDU.BlueprintValidator.Processors.VoxelData.Interface;
 
-    public struct MaterialId : IDeserialize<MaterialId>, IEquatable<MaterialId>
+    public struct MaterialId : IDeserialize<MaterialId>, IEquatable<MaterialId>, IComparable<MaterialId>
     {
         public ulong Id { get; set; }
 
         public string ShortName { get; set; }
 
-        public void Deserialize(BinaryReader reader)
+        public MaterialId(ulong id, string shortName)
         {
-            this.Id = reader.ReadUInt64();
-            byte[] shortNameData = reader.ReadBytes(8);
-            this.ShortName = Encoding.ASCII.GetString(shortNameData);
+            this.Id = id;
+            this.ShortName = shortName;
+        }
+
+        public static MaterialId Deserialize(Stream reader)
+        {
+            ulong id = DeserializationExtensions.DeserializeUInt64(reader);
+            byte[] shortNameData = new byte[8];
+            reader.Read(shortNameData, 0, 8);
+            string shortName = Encoding.ASCII.GetString(shortNameData);
+            return new MaterialId(id, shortName);
         }
 
         public bool Equals(MaterialId other)
@@ -49,6 +54,23 @@ namespace MyDU.BlueprintValidator.Processors.VoxelData.Struct
         public override int GetHashCode()
         {
             return HashCode.Combine(this.Id);
+        }
+
+        public int CompareTo(MaterialId other)
+        {
+            if (this.Id < other.Id)
+            {
+                return 1;
+            }
+
+            if (this.Id > other.Id)
+            {
+                return -1;
+            }
+            else
+            {
+                return 0;
+            }
         }
     }
 }
