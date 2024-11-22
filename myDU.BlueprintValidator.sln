@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35431.28
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "myDU.BlueprintValidator", "src\myDU.BlueprintSanitizer\myDU.BlueprintValidator.csproj", "{5048EE6A-C97D-4EEC-B15A-27450879B9CA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyDU.BlueprintValidator", "src\myDU.BlueprintSanitizer\MyDU.BlueprintValidator.csproj", "{5048EE6A-C97D-4EEC-B15A-27450879B9CA}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "myDU.BlueprintValidator.Tests", "src\myDU.BlueprintSanitizer.Tests\myDU.BlueprintValidator.Tests.csproj", "{0CF68DC9-42A8-48A1-A228-DE7F2651817C}"
 EndProject

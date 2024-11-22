@@ -22,13 +22,7 @@ namespace MyDU.BlueprintValidator.CLI
 
     public static class Program
     {
-        public static IDuClientFactory RestDuClientFactory => ServiceProvider.GetRequiredService<IDuClientFactory>();
-
         public static IServiceProvider ServiceProvider { get; private set; }
-
-        public static IClusterClient Orleans { get; private set; }
-
-        public static IDataAccessor DataAccessor { get; private set; }
 
         public static Client Bot { get; }
 
@@ -80,14 +74,6 @@ namespace MyDU.BlueprintValidator.CLI
         {
             var services = new ServiceCollection();
 
-            //services.RegisterCoreServices();
-            var qurl = Environment.GetEnvironmentVariable("QUEUEING");
-
-            if (string.IsNullOrEmpty(qurl))
-            {
-                qurl = "http://queueing:9630";
-            }
-
             services
             .AddSingleton<ISql, Sql>()
             .AddInitializableSingleton<IGameplayBank, GameplayBank>()
@@ -96,16 +82,12 @@ namespace MyDU.BlueprintValidator.CLI
             .AddOrleansClient("IntegrationTests")
             .AddHttpClient()
             .AddTransient<NQutils.Stats.IStats, NQutils.Stats.FakeIStats>()
-            .AddSingleton<IQueuing, RealQueuing>(sp => new RealQueuing(qurl, sp.GetRequiredService<IHttpClientFactory>().CreateClient()))
             .AddSingleton<IDuClientFactory, BotLib.Protocols.GrpcClient.DuClientFactory>();
 
             var sp = services.BuildServiceProvider();
             ServiceProvider = sp;
             await ServiceProvider.StartServices().ConfigureAwait(false);
             ClientExtensions.SetSingletons(sp);
-            ClientExtensions.UseFactory(sp.GetRequiredService<IDuClientFactory>());
-            Orleans = ServiceProvider.GetRequiredService<IClusterClient>();
-            DataAccessor = ServiceProvider.GetRequiredService<IDataAccessor>();
         }
     }
 }
